@@ -7,13 +7,13 @@ var lib = new Library();
 var today = new DateTime(2026, 10, 14);
 
 // ---------- Dữ liệu ban đầu ----------
-var an   = new Member(1, "An");
-var binh = new Member(2, "Bình");
-var chi  = new Member(3, "Chi");
-var dung = new Member(4, "Dũng");
+var an   = Member.Create(1, "An");
+var binh = Member.Create(2, "Bình");
+var chi  = Member.Create(3, "Chi");
+var dung = Member.Create(4, "Dũng");
 
-var csharp = new Book("111", "Lập trình C#", 1);   // chỉ có 1 bản
-var java   = new Book("222", "Java cơ bản", 5);
+var csharp = Book.Create("111", "Lập trình C#", 1);   // chỉ có 1 bản
+var java   = Book.Create("222", "Java cơ bản", 5);
 lib.AddBook(csharp);
 lib.AddBook(java);
 
@@ -103,15 +103,15 @@ Header("US-05: Thủ thư thêm đầu sách mới");
 
 Demo("① Thêm 'Cấu trúc dữ liệu' (ISBN mới, 3 bản)", () =>
 {
-    lib.AddBook(new Book("333", "Cấu trúc dữ liệu", 3));
+    lib.AddBook(Book.Create("333", "Cấu trúc dữ liệu", 3));
     Console.WriteLine($"           Danh mục hiện có {lib.Books.Count} đầu sách");
 });
 
 Demo("② Thêm sách trùng ISBN 333", () =>
-    lib.AddBook(new Book("333", "Sách khác", 2)));
+    lib.AddBook(Book.Create("333", "Sách khác", 2)));
 
 Demo("② Thêm sách có số bản = 0", () =>
-    lib.AddBook(new Book("444", "Sách rỗng", 0)));
+    lib.AddBook(Book.Create("444", "Sách rỗng", 0)));
 
 // ---------- US-06: Admin khóa tài khoản ----------
 Header("US-06: Admin khóa tài khoản độc giả");
@@ -136,4 +136,23 @@ Demo("② Lịch sử mượn của Dũng vẫn còn", () =>
 });
 
 Console.WriteLine();
+// ---------- Báo cáo mượn trả ----------
+Header("BÁO CÁO MƯỢN TRẢ");
+
+foreach (var b in lib.Books)
+{
+    int borrowing = lib.Loans.Count(l => l.Book == b && l.Status == LoanStatus.Borrowed);
+    Console.WriteLine($"{b.Title}: còn {b.Available}/{b.TotalCopies} bản, đang mượn {borrowing}");
+}
+
+Console.WriteLine();
+Console.WriteLine("Chi tiết từng lượt mượn:");
+foreach (var l in lib.Loans)
+{
+    string overdue = l.IsOverdue(today) ? " (QUÁ HẠN)" : "";
+    Console.WriteLine($"  {l.Member.Name} - {l.Book.Title}: {l.Status}, hạn {l.DueDate:dd/MM/yyyy}{overdue}");
+}
+
+Console.WriteLine();
+Console.WriteLine($"Tổng tiền phạt: {lib.Fines.Sum(f => f.Amount):N0}đ");
 Console.WriteLine("Hết demo.");
