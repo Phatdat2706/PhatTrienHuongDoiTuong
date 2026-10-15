@@ -4,18 +4,26 @@ public class Member
 {
     public const int MaxLoans = 3;
 
-    public int Id { get; }
-    public string Name { get; }
+    public int Id { get; private set; }
+    public string Name { get; private set; }
     private bool _active = true;
 
-    public Member(int id, string name)
+    private Member(int id, string name)
     {
         Id = id;
         Name = name;
     }
 
+    public static Member Create(int id, string name)
+    {
+        if (id <= 0)
+            throw new ArgumentException("Id phải > 0");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Tên trống");
+        return new Member(id, name);
+    }
+
     public bool IsActive() => _active;
 
-    // Khóa tài khoản. Lịch sử mượn và phạt vẫn được giữ ở Library.
     public void Deactivate() => _active = false;
 }

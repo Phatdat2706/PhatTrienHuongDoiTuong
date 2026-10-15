@@ -4,17 +4,24 @@ public enum LoanStatus { Borrowed, Returned }
 
 public class Loan
 {
-    public Member Member { get; }
-    public Book Book { get; }
+    public Member Member { get; private set; }
+    public Book Book { get; private set; }
     public DateTime DueDate { get; private set; }
     public LoanStatus Status { get; private set; } = LoanStatus.Borrowed;
     public int RenewCount { get; private set; }
 
-    public Loan(Member member, Book book, DateTime today)
+    private Loan(Member member, Book book, DateTime today)
     {
         Member = member;
         Book = book;
         DueDate = today.AddDays(14);
+    }
+
+    public static Loan Create(Member member, Book book, DateTime today)
+    {
+        if (member == null) throw new ArgumentNullException(nameof(member));
+        if (book == null) throw new ArgumentNullException(nameof(book));
+        return new Loan(member, book, today);
     }
 
     public bool IsOverdue(DateTime today) =>
@@ -33,7 +40,6 @@ public class Loan
         RenewCount++;
     }
 
-    // Trả sách. Nếu trễ thì trả về Fine, đúng hạn thì trả về null.
     public Fine? Return(DateTime today)
     {
         if (Status == LoanStatus.Returned)
@@ -43,6 +49,6 @@ public class Loan
         Book.GiveBack();
 
         int lateDays = (today.Date - DueDate.Date).Days;
-        return lateDays > 0 ? new Fine(this, lateDays) : null;
+        return lateDays > 0 ? Fine.Create(this, lateDays) : null;
     }
 }

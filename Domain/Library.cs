@@ -29,7 +29,7 @@ public class Library
 
         book.TakeOne(); // tự báo lỗi nếu hết bản
 
-        var loan = new Loan(member, book, today);
+        var loan = Loan.Create(member, book, today);
         Loans.Add(loan);
         return loan;
     }
@@ -42,7 +42,7 @@ public class Library
         if (Reservations.Any(r => r.Member == member && r.Book == book))
             throw new InvalidOperationException("Bạn đã đặt trước cuốn này rồi");
 
-        var reservation = new Reservation(member, book);
+        var reservation = Reservation.Create(member, book);
         Reservations.Add(reservation);
         return reservation;
     }
